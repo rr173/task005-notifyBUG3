@@ -95,6 +95,11 @@ func (s *Store) Create(in CreateInput, now time.Time) (*Notification, error) {
 		return nil, ErrDuplicateID
 	}
 
+	var schedCopy *time.Time
+	if in.ScheduleAt != nil {
+		t := *in.ScheduleAt
+		schedCopy = &t
+	}
 	n := &Notification{
 		ID:         in.ID,
 		Recipient:  in.Recipient,
@@ -102,7 +107,7 @@ func (s *Store) Create(in CreateInput, now time.Time) (*Notification, error) {
 		Priority:   in.Priority,
 		Status:     StatusPending,
 		CreatedAt:  now,
-		ScheduleAt: in.ScheduleAt,
+		ScheduleAt: schedCopy,
 	}
 	s.data[in.ID] = n
 	return n.clone(), nil
